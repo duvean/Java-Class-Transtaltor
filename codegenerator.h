@@ -12,24 +12,4 @@ public:
      virtual void generateArg(const VarDef &arg, string &dest) = 0;
 };
 
-class CppCodeGenerator : public CodeGenerator
-{
-public:
-    void generate(const JavaSourceDef &fileDef, string &dest);
-    void generate(const ClassDef &classDef, string &dest);
-    void generate(const MethodDef &method, string &dest);
-    void generate(const VarDef &field, string &dest);
-    void generateArg(const VarDef &arg, string &dest);
-};
-
-class PythonCodeGenerator : public CodeGenerator
-{
-public:
-    void generate(const JavaSourceDef &fileDef, string &dest);
-    void generate(const ClassDef &classDef, string &dest);
-    void generate(const MethodDef &method, string &dest);
-    void generate(const VarDef &field, string &dest);
-    void generateArg(const VarDef &arg, string &dest);
-};
-
 #endif // CODEGENERATOR_H
