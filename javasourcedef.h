@@ -8,12 +8,22 @@
 #include <map>
 using namespace std;
 
+enum Modifiers
+{
+     DEFAULT    = 1 << 0,  // 0000001
+     PUBLIC     = 1 << 1,  // 0000010
+     PROTECTED  = 1 << 2,  // 0000100
+     PRIVATE    = 1 << 3,  // 0001000
+     STATIC     = 1 << 4,  // 0010000
+     FINAL      = 1 << 5,  // 0100000
+     ABSTRACT   = 1 << 6,  // 1000000
+};
+
 class EntityTemplate
 {
 public:
      string          name;
-     vector<string>  modifiers;
-     char            _modifiers = 0;
+     char            modifiers = 0;
      vector<string>  annotations;
 };
 
@@ -27,7 +37,7 @@ public:
 class MethodDef : public EntityTemplate
 {
 public:
-     string            type;
+     string          type;
      vector<VarDef>  arguments;
 };
 

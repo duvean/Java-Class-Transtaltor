@@ -16,6 +16,12 @@ private slots:
     void testCppGenerateMethod();
     void testCppGenerateField();
     void testCppGenerateArg();
+
+    void testCppGenerateFile_data();
+    void testCppGenerateClass_data();
+    void testCppGenerateMethod_data();
+    void testCppGenerateField_data();
+    void testCppGenerateArg_data();
 };
 
 #endif // CPPCODEGENERATORTEST_H

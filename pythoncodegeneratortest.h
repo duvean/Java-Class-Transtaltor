@@ -16,6 +16,12 @@ private slots:
     void testPythonGenerateMethod();
     void testPythonGenerateField();
     void testPythonGenerateArg();
+
+    void testPythonGenerateFile_data();
+    void testPythonGenerateClass_data();
+    void testPythonGenerateMethod_data();
+    void testPythonGenerateField_data();
+    void testPythonGenerateArg_data();
 };
 
 #endif // PYTHONCODEGENERATORTEST_H
