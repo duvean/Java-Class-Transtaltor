@@ -13,69 +13,69 @@ void CppCodeGenerator::generate(const ClassDef &classDef, string &dest)
 
 void CppCodeGenerator::generate(const MethodDef &method, string &dest)
 {
-    string  res;
-    bool    flagOverride = false;
+    bool flagOverride = false;
 
     /* Добавить аннотации */
     for (const auto &annotation : method.annotations)
     {
         if (annotation == "@Override") flagOverride = true;
-        else res += "/* " + annotation + " */\n";
+        else dest += "/* " + annotation + " */\n";
     }
 
-    /* Добавить модификаторы */
-    if (!(method.modifiers & STATIC)) res += "virtual ";
-    else res += "static ";
+    if (method.isDestructor)
+    {
+        dest += "~";
+    }
+    else
+    {
+        /* Добавить модификаторы */
+        if (!(method.modifiers & STATIC) && !(method.isConstructor)) dest += "virtual ";
+        else if (!(method.isConstructor)) dest += "static ";
 
-    /* Добавить тип и имя */
-    res += method.type + " " + method.name + "(";
+        /* Добавить тип и имя */
+        if (!method.type.empty()) dest += method.type + " ";
+    }
+
+    dest += method.name + "(";
 
     /* Добавить аргументы */
     for (auto arg : method.arguments)
-    {
-        generate(arg, res);
-        res += ", ";
-    }
+        dest += arg.type + " " + arg.name + ", ";
 
-    res.pop_back();
-    res.pop_back();
-    res += ")";
+    dest.pop_back();
+    dest.pop_back();
+    dest += ")";
 
     /* Изменить поведение согласно установленным флагам по правилам преобразования */
-    if (flagOverride) res += " override";
-    if (method.modifiers & FINAL) res += " final";
-    if (method.modifiers & ABSTRACT) res += " = 0";
-    res += ";";
-
-    dest += res;
+    if (flagOverride) dest += " override";
+    if (method.modifiers & FINAL) dest += " final";
+    if (method.modifiers & ABSTRACT) dest += " = 0";
+    dest += ";";
 }
 
 void CppCodeGenerator::generate(const VarDef &field, string &dest)
 {
-    string res;
-
     /* Добавить аннотации */
     if (!field.annotations.empty())
     {
-        res += "/* ";
+        dest += "/* ";
         for (const auto &annotation : field.annotations)
-            res += annotation + ", ";
-        res.erase(res.end() - 2, res.end());
-        res += " */\n";
+            dest += annotation + ", ";
+        dest.erase(dest.end() - 2, dest.end());
+        dest += " */\n";
     }
 
     /* Добавить модификаторы */
-    if (field.modifiers & FINAL) res += "const ";
-    if (field.modifiers & STATIC) res += "static ";
+    if (field.modifiers & FINAL) dest += "const ";
+    if (field.modifiers & STATIC) dest += "static ";
 
     /* Добавить тип и имя */
-    res += field.type + " " + field.name;
+    dest += field.type + " " + field.name;
 
     /* Добавить значение */
-    if (!field.value.empty()) res += " = " + field.value;
+    if (!field.value.empty()) dest += " = " + field.value;
 
-    res += ";";
-    dest += res;
+    dest += ";";
 }
 
 void CppCodeGenerator::generateArg(const VarDef &arg, string &dest)

@@ -39,6 +39,8 @@ class MethodDef : public EntityTemplate
 public:
      string          type;
      vector<VarDef>  arguments;
+     bool isConstructor = false;
+     bool isDestructor = false;
 };
 
 class ClassDef : public EntityTemplate
