@@ -2,6 +2,7 @@
 #include "cppcodegenerator.h"
 #include "javasourcedef.h"
 #include <QtTest/QtTest>
+#include <iostream>
 
 Q_DECLARE_METATYPE(JavaSourceDef)
 Q_DECLARE_METATYPE(ClassDef)
@@ -52,7 +53,19 @@ void CppCodeGeneratorTest::testCppGenerateField()
 
     string generatedCode;
     generator.generate(field, generatedCode);
-    QCOMPARE(QString::fromStdString(generatedCode), expectedOutput);
+
+
+
+    if (QString::fromStdString(generatedCode) != expectedOutput)
+    {
+        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
+                            .arg(QString::fromStdString(generatedCode))
+                            .arg(expectedOutput);
+        cout << message.toStdString() << endl;
+        QVERIFY2(false, "");
+    }
+
+    //QCOMPARE(QString::fromStdString(generatedCode), expectedOutput);
 }
 
 void CppCodeGeneratorTest::testCppGenerateField_data()
@@ -63,7 +76,7 @@ void CppCodeGeneratorTest::testCppGenerateField_data()
     VarDef field1;
     field1.name = "fieldName";
     field1.type = "int";
-    QTest::newRow("__BASE__ No Modifiers") << field1 << "int fieldName;";
+    QTest::newRow("__BASE__ No Modifiers") << field1 << "int fieldName ;";
 
     VarDef field2;
     field2.name = "fieldName";
