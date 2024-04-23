@@ -52,7 +52,7 @@ void CppCodeGeneratorTest::testCppGenerateField()
 
     string generatedCode;
     generator.generate(field, generatedCode);
-    QCOMPARE(field, expectedOutput);
+    QCOMPARE(QString::fromStdString(generatedCode), expectedOutput);
 }
 
 void CppCodeGeneratorTest::testCppGenerateField_data()
@@ -66,21 +66,21 @@ void CppCodeGeneratorTest::testCppGenerateField_data()
     QTest::newRow("__BASE__ No Modifiers") << field1 << "int fieldName;";
 
     VarDef field2;
-    field1.name = "fieldName";
-    field1.type = "int";
-    field1.modifiers |= STATIC;
+    field2.name = "fieldName";
+    field2.type = "int";
+    field2.modifiers |= STATIC;
     QTest::newRow("Static Field") << field2 << "static int fieldName;";
 
     VarDef field3;
-    field1.name = "fieldName";
-    field1.type = "int";
-    field1.modifiers |= FINAL;
-    QTest::newRow("Final Field") << field3 << "final int fieldName;";
+    field3.name = "fieldName";
+    field3.type = "int";
+    field3.modifiers |= FINAL;
+    QTest::newRow("Final Field") << field3 << "const int fieldName;";
 
     VarDef field4;
-    field1.name = "fieldName";
-    field1.type = "int";
-    field1.value = "378";
+    field4.name = "fieldName";
+    field4.type = "int";
+    field4.value = "378";
     QTest::newRow("Field With Init") << field4 << "int fieldName = 378;";
 }
 
