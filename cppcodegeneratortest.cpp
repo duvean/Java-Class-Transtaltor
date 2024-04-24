@@ -16,22 +16,430 @@ CppCodeGeneratorTest::CppCodeGeneratorTest(QObject *parent) : QObject(parent)
 
 void CppCodeGeneratorTest::testCppGenerateFile()
 {
-    // Test CppCodeGenerator::generate(const JavaSourceDef &fileDef, string &dest)
+    CppCodeGenerator generator;
+
+    QFETCH(JavaSourceDef, fileDef);
+    QFETCH(QString, expectedOutput);
+
+    string generatedCode;
+    generator.generate(fileDef, generatedCode);
+
+    if (QString::fromStdString(generatedCode) != expectedOutput)
+    {
+        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
+                            .arg(QString::fromStdString(generatedCode))
+                            .arg(expectedOutput);
+        cout << message.toStdString() << endl;
+        QVERIFY2(false, "");
+    }
 }
 
 void CppCodeGeneratorTest::testCppGenerateFile_data()
 {
-    // Test CppCodeGenerator::generate(const JavaSourceDef &fileDef, string &dest)
+    QTest::addColumn<ClassDef>("classDef");
+    QTest::addColumn<QString>("expectedOutput");
+
+    VarDef publicField;
+    publicField.name = "fieldName";
+    publicField.type = "int";
+    publicField.modifiers |= PUBLIC;
+    MethodDef publicMethod;
+    publicMethod.name = "methodName";
+    publicMethod.type = "int";
+    publicMethod.modifiers |= PUBLIC;
+    ClassDef baseClass;
+    baseClass.name = "baseClass";
+    baseClass.fields = { publicField };
+    baseClass.methods = { publicMethod };
+
+    JavaSourceDef file1;
+    file1.name = "filename";
+    file1.package = "com.example";
+    file1.classes = { baseClass };
+    QString expected1 =
+            R"(
+            namespace com.example {
+            class ClassName
+            {
+            public:
+                int fieldName;
+                virtual int methodName();
+            };
+            }
+            )";
+    QTest::newRow("One Base Class No Imports") << file1 << expected1;
+
+    JavaSourceDef file2;
+    file2.name = "filename";
+    file2.package = "com.example";
+    file2.classImports = { "com.example.class1" };
+    file2.classes = { baseClass };
+    QString expected2 =
+            R"(
+            using com::example2::class1
+            namespace com.example {
+            class ClassName
+            {
+            public:
+                int fieldName;
+                virtual int methodName();
+            };
+            }
+            )";
+    QTest::newRow("One Class Import") << file2 << expected2;
+
+    JavaSourceDef file3;
+    file3.name = "filename";
+    file3.package = "com.example1";
+    file3.packageImports = { "com.example2" };
+    file3.classes = { baseClass };
+    QString expected3 =
+            R"(
+            using com::example2
+            namespace com.example1 {
+            class ClassName
+            {
+            public:
+                int fieldName;
+                virtual int methodName();
+            };
+            }
+            )";
+    QTest::newRow("One Class Import") << file2 << expected2;
 }
 
 void CppCodeGeneratorTest::testCppGenerateClass()
 {
-    // Test CppCodeGenerator::generate(const ClassDef &classDef, string &dest)
+    CppCodeGenerator generator;
+
+    QFETCH(ClassDef, classDef);
+    QFETCH(QString, expectedOutput);
+
+    string generatedCode;
+    generator.generate(classDef, generatedCode);
+
+    if (QString::fromStdString(generatedCode) != expectedOutput)
+    {
+        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
+                            .arg(QString::fromStdString(generatedCode))
+                            .arg(expectedOutput);
+        cout << message.toStdString() << endl;
+        QVERIFY2(false, "");
+    }
 }
 
 void CppCodeGeneratorTest::testCppGenerateClass_data()
 {
-    // Test CppCodeGenerator::generate(const ClassDef &classDef, string &dest)
+    QTest::addColumn<ClassDef>("classDef");
+    QTest::addColumn<QString>("expectedOutput");
+
+    VarDef privateField;
+    privateField.name = "fieldName";
+    privateField.type = "int";
+    privateField.modifiers |= PRIVATE;
+    VarDef protectedField;
+    protectedField.name = "fieldName";
+    protectedField.type = "int";
+    protectedField.modifiers |= PROTECTED;
+    VarDef publicField;
+    publicField.name = "fieldName";
+    publicField.type = "int";
+    publicField.modifiers |= PUBLIC;
+    VarDef defaultField;
+    defaultField.name = "fieldName";
+    defaultField.type = "int";
+    defaultField.modifiers |= DEFAULT;
+    VarDef staticField;
+    staticField.name = "fieldName";
+    staticField.type = "int";
+    staticField.value = "378";
+    publicField.modifiers |= STATIC|PUBLIC;
+
+    MethodDef privateMethod;
+    privateMethod.name = "methodName";
+    privateMethod.type = "int";
+    privateMethod.modifiers |= PRIVATE;
+    MethodDef protectedMethod;
+    protectedMethod.name = "methodName";
+    protectedMethod.type = "int";
+    protectedMethod.modifiers |= PROTECTED;
+    MethodDef publicMethod;
+    publicMethod.name = "methodName";
+    publicMethod.type = "int";
+    publicMethod.modifiers |= PUBLIC;
+    MethodDef defaultMethod;
+    defaultMethod.name = "methodName";
+    defaultMethod.type = "int";
+    defaultMethod.modifiers |= DEFAULT;
+    MethodDef abstractMethod;
+    publicMethod.name = "methodName";
+    publicMethod.type = "int";
+    publicMethod.modifiers |= PUBLIC|ABSTRACT;
+
+    ClassDef privateClass;
+    privateClass.name = "privateClass";
+    privateClass.modifiers |= PRIVATE;
+    ClassDef protectedClass;
+    privateClass.name = "protectedClass";
+    privateClass.modifiers |= PROTECTED;
+    ClassDef publicClass;
+    privateClass.name = "publicClass";
+    privateClass.modifiers |= PUBLIC;
+    ClassDef defaultClass;
+    privateClass.name = "defaultClass";
+    privateClass.modifiers |= DEFAULT;
+    ClassDef Nested2;
+    ClassDef Nested1;
+    Nested1.nestedClasses = { Nested2 };
+
+    ClassDef class1;
+    class1.name = "ClassName";
+    class1.isInterface = false;
+    class1.fields = { privateField };
+    class1.methods = { privateMethod };
+    QString expected1 =
+            R"(
+            class ClassName
+            {
+            private:
+                int fieldName;
+                virtual int methodName();
+            }
+            )";
+    QTest::newRow("Private Field And Method") << class1 << expected1;
+
+    ClassDef class2;
+    class2.name = "ClassName";
+    class2.isInterface = false;
+    class2.fields = { protectedField };
+    class2.methods = { protectedMethod };
+    QString expected2 =
+            R"(
+            class ClassName
+            {
+            public:
+                class protectedMembers
+                {
+                protected:
+                    int fieldName;
+                    virtual int methodName();
+                };
+            }
+            )";
+    QTest::newRow("Protected Field And Method") << class2 << expected2;
+
+    ClassDef class3;
+    class3.name = "ClassName";
+    class3.isInterface = false;
+    class3.fields = { publicField };
+    class3.methods = { publicMethod };
+    QString expected3 =
+            R"(
+            class ClassName
+            {
+            public:
+                int fieldName;
+                virtual int methodName();
+            }
+            )";
+    QTest::newRow("Public Field And Method") << class3 << expected3;
+
+    ClassDef class4;
+    class4.name = "ClassName";
+    class4.isInterface = false;
+    class4.fields = { defaultField };
+    class4.methods = { defaultMethod };
+    QString expected4 =
+            R"(
+            class ClassName
+            {
+            public:
+                class defaultMembers
+                {
+                public:
+                    int fieldName;
+                    virtual int methodName();
+                };
+            }
+            )";
+    QTest::newRow("Default Field And Method") << class4 << expected4;
+
+    ClassDef class5;
+    class5.name = "IName";
+    class5.isInterface = true;
+    class5.fields = { staticField };
+    class5.methods = { abstractMethod };
+    QString expected5 =
+            R"(
+            class IName
+            {
+            public:
+                static int fieldName = 378;
+                virtual methodName() = 0;
+            }
+            )";
+    QTest::newRow("Interface") << class5 << expected5;
+
+    ClassDef class6;
+    class6.name = "IName";
+    class6.isInterface = true;
+    class6.methods = { abstractMethod };
+    class6.annotations = { "@FunctionalInterface" };
+    QString expected6 =
+            R"(
+            /* @FunctionalInterface */
+            class IName
+            {
+            public:
+                virtual methodName() = 0;
+            }
+            )";
+    QTest::newRow("Functional Interface") << class6 << expected6;
+
+    ClassDef class7;
+    class7.name = "ClassName";
+    class7.isInterface = false;
+    class7.fields = { staticField };
+    class7.methods = { abstractMethod };
+    class7.modifiers |= ABSTRACT;
+    QString expected7 =
+            R"(
+            class ClassName
+            {
+            public:
+                virtual methodName() = 0;
+            }
+            )";
+    QTest::newRow("Abstract Class") << class7 << expected7;
+
+    ClassDef class8;
+    class8.name = "ClassName";
+    class8.isInterface = false;
+    class8.fields = { publicField };
+    class8.methods = { publicMethod };
+    class8.modifiers |= STATIC;
+    QString expected8 =
+            R"(
+            class ClassName
+            {
+            public:
+                static int fieldName;
+                static int methodName();
+            }
+            )";
+    QTest::newRow("Static Class") << class8 << expected8;
+
+    ClassDef class9;
+    class9.name = "ClassName";
+    class9.isInterface = false;
+    class9.modifiers |= FINAL;
+    QString expected9 =
+            R"(
+            class ClassName final
+            {
+            }
+            )";
+    QTest::newRow("Final Class") << class9 << expected9;
+
+    ClassDef class10;
+    class10.name = "ClassName";
+    class10.isInterface = false;
+    class10.nestedClasses = {
+        privateClass,
+        protectedClass,
+        publicClass,
+        defaultClass
+    };
+    QString expected10 =
+            R"(
+            class ClassName
+            {
+            private:
+                class privateClass {};
+            public:
+                class publicClass {};
+
+                class protectedMembers
+                {
+                protected:
+                    friend ...
+                    class publicClass {};
+                };
+                class defaultMembers
+                {
+                public:
+                    friend ...
+                    class defaultClass {};
+                };
+            }
+
+            class ClassName::privateClass
+            {
+            }
+
+            class ClassName::protectedClass
+            {
+            }
+
+            class ClassName::publicClass
+            {
+            }
+
+            class ClassName::defaultClass
+            {
+            }
+            )";
+    QTest::newRow("Nested Classes Of Each Privacy Modifier") << class10 << expected10;
+
+    ClassDef class11;
+    class11.name = "ClassName";
+    class11.isInterface = false;
+    class11.nestedClasses = {
+        Nested1
+    };
+    QString expected11 =
+            R"(
+            class ClassName
+            {
+            public:
+                class Nested1 {};
+            }
+
+            class ClassName::Nested1
+            {
+            public:
+                class Nested2 {};
+            }
+
+            class ClassName::Nested1::Nested2
+            {
+            }
+            )";
+    QTest::newRow("Twice Nested Class") << class11 << expected11;
+
+    ClassDef class12;
+    class12.name = "ClassName";
+    class12.isInterface = false;
+    class12.extends = "ParentClass";
+    QString expected12 =
+            R"(
+            class ClassName : public ParentClass
+            {
+            };
+            )";
+    QTest::newRow("Inheritance From Class") << class12 << expected12;
+
+    ClassDef class13;
+    class13.name = "ClassName";
+    class13.isInterface = false;
+    class13.implements = { "IName1", "IName2" };
+    QString expected13 =
+            R"(
+            class ClassName : public IName1, public IName2
+            {
+            };
+            )";
+    QTest::newRow("Inheritance From Several Interfaces") << class13 << expected13;
 }
 
 void CppCodeGeneratorTest::testCppGenerateMethod()
@@ -103,7 +511,7 @@ void CppCodeGeneratorTest::testCppGenerateMethod_data()
     method6.modifiers |= PROTECTED;
     method6.isDestructor = true;
     QTest::newRow("Deconstructor") << method6 << "~finalize(int argName);";
-    /* невозможно задать имя деструктора не зная имени класса */
+    /* невозможно задать имя деструктора не зная имени класса, оно задастся при генерации класса */
 
     MethodDef method7;
     method7.name = "methodName";

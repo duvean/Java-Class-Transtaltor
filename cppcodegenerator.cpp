@@ -22,10 +22,7 @@ void CppCodeGenerator::generate(const MethodDef &method, string &dest)
         else dest += "/* " + annotation + " */\n";
     }
 
-    if (method.isDestructor)
-    {
-        dest += "~";
-    }
+    if (method.isDestructor) dest += "~";
     else
     {
         /* Добавить модификаторы */
