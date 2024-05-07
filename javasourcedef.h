@@ -62,7 +62,7 @@ public:
      string            package;
      vector<string>    imports;
      vector<string>    classImports;
-     vector<string>    methodImports;
+     vector<string>    packageImports;
      vector<ClassDef>  classes;
 };
 

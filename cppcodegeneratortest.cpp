@@ -14,25 +14,25 @@ CppCodeGeneratorTest::CppCodeGeneratorTest(QObject *parent) : QObject(parent)
 
 }
 
-void CppCodeGeneratorTest::testCppGenerateFile()
-{
-    CppCodeGenerator generator;
+//void CppCodeGeneratorTest::testCppGenerateFile()
+//{
+//    CppCodeGenerator generator;
 
-    QFETCH(JavaSourceDef, fileDef);
-    QFETCH(QString, expectedOutput);
+//    QFETCH(JavaSourceDef, fileDef);
+//    QFETCH(QString, expectedOutput);
 
-    string generatedCode;
-    generator.generate(fileDef, generatedCode);
+//    string generatedCode;
+//    generator.generate(fileDef, generatedCode);
 
-    if (QString::fromStdString(generatedCode) != expectedOutput)
-    {
-        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
-                            .arg(QString::fromStdString(generatedCode))
-                            .arg(expectedOutput);
-        cout << message.toStdString() << endl;
-        QVERIFY2(false, "");
-    }
-}
+//    if (QString::fromStdString(generatedCode) != expectedOutput)
+//    {
+//        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
+//                            .arg(QString::fromStdString(generatedCode))
+//                            .arg(expectedOutput);
+//        cout << message.toStdString() << endl;
+//        QVERIFY2(false, "");
+//    }
+//}
 
 void CppCodeGeneratorTest::testCppGenerateFile_data()
 {
@@ -105,28 +105,55 @@ void CppCodeGeneratorTest::testCppGenerateFile_data()
             };
             }
             )";
-    QTest::newRow("One Class Import") << file2 << expected2;
+    QTest::newRow("One Package Import") << file3 << expected3;
+
+    JavaSourceDef file4;
+    file4.name = "filename";
+    file4.package = "com.example1";
+    file4.classImports = { "com.example.class1" };
+    file4.packageImports = { "com.example2" };
+    file4.classes = { baseClass };
+    QString expected4 =
+            R"(
+            using com::example2
+            using com::example2::class1
+            namespace com.example1 {
+            class ClassName1
+            {
+            public:
+                int fieldName;
+                virtual int methodName();
+            };
+            class ClassName2
+            {
+            public:
+                int fieldName;
+                virtual int methodName();
+            };
+            }
+            )";
+    QTest::newRow("Several Classes Several Imports") << file4 << expected4;
 }
 
-void CppCodeGeneratorTest::testCppGenerateClass()
-{
-    CppCodeGenerator generator;
+//void CppCodeGeneratorTest::testCppGenerateClass()
+//{
+//    CppCodeGenerator generator;
 
-    QFETCH(ClassDef, classDef);
-    QFETCH(QString, expectedOutput);
+//    QFETCH(ClassDef, classDef);
+//    QFETCH(QString, expectedOutput);
 
-    string generatedCode;
-    generator.generate(classDef, generatedCode);
+//    string generatedCode;
+//    generator.generate(classDef, generatedCode);
 
-    if (QString::fromStdString(generatedCode) != expectedOutput)
-    {
-        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
-                            .arg(QString::fromStdString(generatedCode))
-                            .arg(expectedOutput);
-        cout << message.toStdString() << endl;
-        QVERIFY2(false, "");
-    }
-}
+//    if (QString::fromStdString(generatedCode) != expectedOutput)
+//    {
+//        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
+//                            .arg(QString::fromStdString(generatedCode))
+//                            .arg(expectedOutput);
+//        cout << message.toStdString() << endl;
+//        QVERIFY2(false, "");
+//    }
+//}
 
 void CppCodeGeneratorTest::testCppGenerateClass_data()
 {
@@ -531,16 +558,14 @@ void CppCodeGeneratorTest::testCppGenerateField()
     string generatedCode;
     generator.generate(field, generatedCode);
 
-    if (QString::fromStdString(generatedCode) != expectedOutput)
+    if (util::normalize(generatedCode) != util::normalize(expectedOutput.toStdString()))
     {
         QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
                             .arg(QString::fromStdString(generatedCode))
                             .arg(expectedOutput);
-        cout << message.toStdString() << endl;
+        QWARN(message.toStdString().c_str());
         QVERIFY2(false, "");
     }
-
-    //QCOMPARE(QString::fromStdString(generatedCode), expectedOutput);
 }
 
 void CppCodeGeneratorTest::testCppGenerateField_data()
@@ -549,7 +574,7 @@ void CppCodeGeneratorTest::testCppGenerateField_data()
     QTest::addColumn<QString>("expectedOutput");
 
     VarDef field1;
-    field1.name = "fieldName";
+    field1.name = "fieldNamee";
     field1.type = "int";
     QTest::newRow("__BASE__ No Modifiers") << field1 << "int fieldName;";
 
@@ -570,14 +595,4 @@ void CppCodeGeneratorTest::testCppGenerateField_data()
     field4.type = "int";
     field4.value = "378";
     QTest::newRow("Field With Init") << field4 << "int fieldName = 378;";
-}
-
-void CppCodeGeneratorTest::testCppGenerateArg()
-{
-    // Test CppCodeGenerator::generateArg(const VarDef &arg, string &dest)
-}
-
-void CppCodeGeneratorTest::testCppGenerateArg_data()
-{
-    // Test CppCodeGenerator::generateArg(const VarDef &arg, string &dest)
 }

@@ -1,4 +1,5 @@
 #include "cppcodegenerator.h"
+#include "util.h"
 
 void CppCodeGenerator::generate(const JavaSourceDef &fileDef, string &dest)
 {
@@ -39,8 +40,7 @@ void CppCodeGenerator::generate(const MethodDef &method, string &dest)
     for (auto arg : method.arguments)
         dest += arg.type + " " + arg.name + ", ";
 
-    dest.pop_back();
-    dest.pop_back();
+    if (!method.arguments.empty()) { dest.pop_back(); dest.pop_back(); }
     dest += ")";
 
     /* Изменить поведение согласно установленным флагам по правилам преобразования */
@@ -73,9 +73,4 @@ void CppCodeGenerator::generate(const VarDef &field, string &dest)
     if (!field.value.empty()) dest += " = " + field.value;
 
     dest += ";";
-}
-
-void CppCodeGenerator::generateArg(const VarDef &arg, string &dest)
-{
-
 }

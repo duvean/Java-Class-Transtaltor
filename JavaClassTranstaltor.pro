@@ -20,7 +20,8 @@ SOURCES += \
         cppcodegeneratortest.cpp \
         main.cpp \
         pythoncodegenerator.cpp \
-        pythoncodegeneratortest.cpp
+        pythoncodegeneratortest.cpp \
+        util.cpp
 
 QT += testlib
 
@@ -35,4 +36,5 @@ HEADERS += \
     cppcodegeneratortest.h \
     javasourcedef.h \
     pythoncodegenerator.h \
-    pythoncodegeneratortest.h
+    pythoncodegeneratortest.h \
+    util.h

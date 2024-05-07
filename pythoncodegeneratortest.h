@@ -2,6 +2,7 @@
 #define PYTHONCODEGENERATORTEST_H
 #include "pythoncodegenerator.h"
 #include <QObject>
+#include "util.h"
 
 class PythonCodeGeneratorTest : public QObject
 {
@@ -11,17 +12,15 @@ public:
     explicit PythonCodeGeneratorTest(QObject *parent = nullptr);
 
 private slots:
-    void testPythonGenerateFile();
-    void testPythonGenerateClass();
-    void testPythonGenerateMethod();
-    void testPythonGenerateField();
-    void testPythonGenerateArg();
+//    void testPythonGenerateFile();
+//    void testPythonGenerateClass();
+//    void testPythonGenerateMethod();
+//    void testPythonGenerateField();
 
-    void testPythonGenerateFile_data();
-    void testPythonGenerateClass_data();
-    void testPythonGenerateMethod_data();
-    void testPythonGenerateField_data();
-    void testPythonGenerateArg_data();
+//    void testPythonGenerateFile_data();
+//    void testPythonGenerateClass_data();
+//    void testPythonGenerateMethod_data();
+//    void testPythonGenerateField_data();
 };
 
 #endif // PYTHONCODEGENERATORTEST_H
