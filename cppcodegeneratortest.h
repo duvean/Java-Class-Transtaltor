@@ -13,7 +13,7 @@ public:
 
 private slots:
 //    void testCppGenerateFile();
-//    void testCppGenerateClass();
+    void testCppGenerateClass();
     void testCppGenerateMethod();
     void testCppGenerateField();
 

@@ -9,11 +9,6 @@ Q_DECLARE_METATYPE(ClassDef)
 Q_DECLARE_METATYPE(MethodDef)
 Q_DECLARE_METATYPE(VarDef)
 
-CppCodeGeneratorTest::CppCodeGeneratorTest(QObject *parent) : QObject(parent)
-{
-
-}
-
 //void CppCodeGeneratorTest::testCppGenerateFile()
 //{
 //    CppCodeGenerator generator;
@@ -24,12 +19,12 @@ CppCodeGeneratorTest::CppCodeGeneratorTest(QObject *parent) : QObject(parent)
 //    string generatedCode;
 //    generator.generate(fileDef, generatedCode);
 
-//    if (QString::fromStdString(generatedCode) != expectedOutput)
+//    if (util::normalize(generatedCode) != util::normalize(expectedOutput.toStdString()))
 //    {
 //        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
 //                            .arg(QString::fromStdString(generatedCode))
 //                            .arg(expectedOutput);
-//        cout << message.toStdString() << endl;
+//        QWARN(message.toStdString().c_str());
 //        QVERIFY2(false, "");
 //    }
 //}
@@ -135,25 +130,25 @@ void CppCodeGeneratorTest::testCppGenerateFile_data()
     QTest::newRow("Several Classes Several Imports") << file4 << expected4;
 }
 
-//void CppCodeGeneratorTest::testCppGenerateClass()
-//{
-//    CppCodeGenerator generator;
+void CppCodeGeneratorTest::testCppGenerateClass()
+{
+    CppCodeGenerator generator;
 
-//    QFETCH(ClassDef, classDef);
-//    QFETCH(QString, expectedOutput);
+    QFETCH(ClassDef, classDef);
+    QFETCH(QString, expectedOutput);
 
-//    string generatedCode;
-//    generator.generate(classDef, generatedCode);
+    string generatedCode;
+    generator.generate(classDef, generatedCode);
 
-//    if (QString::fromStdString(generatedCode) != expectedOutput)
-//    {
-//        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
-//                            .arg(QString::fromStdString(generatedCode))
-//                            .arg(expectedOutput);
-//        cout << message.toStdString() << endl;
-//        QVERIFY2(false, "");
-//    }
-//}
+    if (util::normalize(generatedCode) != util::normalize(expectedOutput.toStdString()))
+    {
+        QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
+                .arg(QString::fromStdString(generatedCode))
+                .arg(expectedOutput);
+        QWARN(message.toStdString().c_str());
+        QVERIFY2(false, "");
+    }
+}
 
 void CppCodeGeneratorTest::testCppGenerateClass_data()
 {
@@ -163,61 +158,75 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
     VarDef privateField;
     privateField.name = "fieldName";
     privateField.type = "int";
-    privateField.modifiers |= PRIVATE;
+    privateField.modifiers = PRIVATE;
     VarDef protectedField;
     protectedField.name = "fieldName";
     protectedField.type = "int";
-    protectedField.modifiers |= PROTECTED;
+    protectedField.modifiers = PROTECTED;
     VarDef publicField;
     publicField.name = "fieldName";
     publicField.type = "int";
-    publicField.modifiers |= PUBLIC;
+    publicField.modifiers = PUBLIC;
     VarDef defaultField;
     defaultField.name = "fieldName";
     defaultField.type = "int";
-    defaultField.modifiers |= DEFAULT;
+    defaultField.modifiers = DEFAULT;
     VarDef staticField;
     staticField.name = "fieldName";
     staticField.type = "int";
     staticField.value = "378";
-    publicField.modifiers |= STATIC|PUBLIC;
+    staticField.modifiers = PUBLIC|STATIC;
 
     MethodDef privateMethod;
     privateMethod.name = "methodName";
     privateMethod.type = "int";
-    privateMethod.modifiers |= PRIVATE;
+    privateMethod.modifiers = PRIVATE;
     MethodDef protectedMethod;
     protectedMethod.name = "methodName";
     protectedMethod.type = "int";
-    protectedMethod.modifiers |= PROTECTED;
+    protectedMethod.modifiers = PROTECTED;
     MethodDef publicMethod;
     publicMethod.name = "methodName";
     publicMethod.type = "int";
-    publicMethod.modifiers |= PUBLIC;
+    publicMethod.modifiers = PUBLIC;
     MethodDef defaultMethod;
     defaultMethod.name = "methodName";
     defaultMethod.type = "int";
-    defaultMethod.modifiers |= DEFAULT;
+    defaultMethod.modifiers = DEFAULT;
     MethodDef abstractMethod;
-    publicMethod.name = "methodName";
-    publicMethod.type = "int";
-    publicMethod.modifiers |= PUBLIC|ABSTRACT;
+    abstractMethod.name = "methodName";
+    abstractMethod.type = "int";
+    abstractMethod.modifiers = PUBLIC|ABSTRACT;
 
     ClassDef privateClass;
     privateClass.name = "privateClass";
-    privateClass.modifiers |= PRIVATE;
+    privateClass.modifiers = PRIVATE;
+    privateClass.fullPath = "ClassName::";
     ClassDef protectedClass;
-    privateClass.name = "protectedClass";
-    privateClass.modifiers |= PROTECTED;
+    protectedClass.name = "protectedClass";
+    protectedClass.modifiers = PROTECTED;
+    protectedClass.fullPath = "ClassName::";
     ClassDef publicClass;
-    privateClass.name = "publicClass";
-    privateClass.modifiers |= PUBLIC;
+    publicClass.name = "publicClass";
+    publicClass.modifiers = PUBLIC;
+    publicClass.fullPath = "ClassName::";
     ClassDef defaultClass;
-    privateClass.name = "defaultClass";
-    privateClass.modifiers |= DEFAULT;
+    defaultClass.name = "defaultClass";
+    defaultClass.modifiers = DEFAULT;
+    defaultClass.fullPath = "ClassName::";
     ClassDef Nested2;
+    Nested2.name = "Nested2";
+    Nested2.modifiers = PUBLIC;
+    Nested2.fullPath = "ClassName::Nested1::";
     ClassDef Nested1;
+    Nested1.name = "Nested1";
+    Nested1.modifiers = PUBLIC;
     Nested1.nestedClasses = { Nested2 };
+    Nested1.fullPath = "ClassName::";
+
+
+
+
 
     ClassDef class1;
     class1.name = "ClassName";
@@ -231,9 +240,9 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
             private:
                 int fieldName;
                 virtual int methodName();
-            }
+            };
             )";
-    QTest::newRow("Private Field And Method") << class1 << expected1;
+    QTest::newRow("1. Private Field And Method") << class1 << expected1;
 
     ClassDef class2;
     class2.name = "ClassName";
@@ -251,9 +260,9 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
                     int fieldName;
                     virtual int methodName();
                 };
-            }
+            };
             )";
-    QTest::newRow("Protected Field And Method") << class2 << expected2;
+    QTest::newRow("2. Protected Field And Method") << class2 << expected2;
 
     ClassDef class3;
     class3.name = "ClassName";
@@ -267,9 +276,9 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
             public:
                 int fieldName;
                 virtual int methodName();
-            }
+            };
             )";
-    QTest::newRow("Public Field And Method") << class3 << expected3;
+    QTest::newRow("3. Public Field And Method") << class3 << expected3;
 
     ClassDef class4;
     class4.name = "ClassName";
@@ -287,9 +296,9 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
                     int fieldName;
                     virtual int methodName();
                 };
-            }
+            };
             )";
-    QTest::newRow("Default Field And Method") << class4 << expected4;
+    QTest::newRow("4. Default Field And Method") << class4 << expected4;
 
     ClassDef class5;
     class5.name = "IName";
@@ -302,10 +311,10 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
             {
             public:
                 static int fieldName = 378;
-                virtual methodName() = 0;
-            }
+                virtual int methodName() = 0;
+            };
             )";
-    QTest::newRow("Interface") << class5 << expected5;
+    QTest::newRow("5. Interface") << class5 << expected5;
 
     ClassDef class6;
     class6.name = "IName";
@@ -318,33 +327,33 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
             class IName
             {
             public:
-                virtual methodName() = 0;
-            }
+                virtual int methodName() = 0;
+            };
             )";
-    QTest::newRow("Functional Interface") << class6 << expected6;
+    QTest::newRow("6. Functional Interface") << class6 << expected6;
 
     ClassDef class7;
     class7.name = "ClassName";
     class7.isInterface = false;
-    class7.fields = { staticField };
-    class7.methods = { abstractMethod };
-    class7.modifiers |= ABSTRACT;
+    class7.methods = { abstractMethod, publicMethod };
+    class7.modifiers = ABSTRACT;
     QString expected7 =
             R"(
             class ClassName
             {
             public:
-                virtual methodName() = 0;
-            }
+                virtual int methodName() = 0;
+                virtual int methodName();
+            };
             )";
-    QTest::newRow("Abstract Class") << class7 << expected7;
+    QTest::newRow("7. Abstract Class") << class7 << expected7;
 
     ClassDef class8;
     class8.name = "ClassName";
     class8.isInterface = false;
     class8.fields = { publicField };
     class8.methods = { publicMethod };
-    class8.modifiers |= STATIC;
+    class8.modifiers = STATIC;
     QString expected8 =
             R"(
             class ClassName
@@ -352,21 +361,21 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
             public:
                 static int fieldName;
                 static int methodName();
-            }
+            };
             )";
-    QTest::newRow("Static Class") << class8 << expected8;
+    QTest::newRow("8. Static Class") << class8 << expected8;
 
     ClassDef class9;
     class9.name = "ClassName";
     class9.isInterface = false;
-    class9.modifiers |= FINAL;
+    class9.modifiers = FINAL;
     QString expected9 =
             R"(
             class ClassName final
             {
-            }
+            };
             )";
-    QTest::newRow("Final Class") << class9 << expected9;
+    QTest::newRow("9. Final Class") << class9 << expected9;
 
     ClassDef class10;
     class10.name = "ClassName";
@@ -382,41 +391,39 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
             class ClassName
             {
             private:
-                class privateClass {};
+                class privateClass;
             public:
-                class publicClass {};
+                class publicClass;
 
                 class protectedMembers
                 {
                 protected:
-                    friend ...
-                    class publicClass {};
+                    class protectedClass;
                 };
                 class defaultMembers
                 {
                 public:
-                    friend ...
-                    class defaultClass {};
+                    class defaultClass;
                 };
-            }
+            };
 
             class ClassName::privateClass
             {
-            }
+            };
 
             class ClassName::protectedClass
             {
-            }
+            };
 
             class ClassName::publicClass
             {
-            }
+            };
 
             class ClassName::defaultClass
             {
-            }
+            };
             )";
-    QTest::newRow("Nested Classes Of Each Privacy Modifier") << class10 << expected10;
+    QTest::newRow("10. Nested Classes Of Each Privacy Modifier") << class10 << expected10;
 
     ClassDef class11;
     class11.name = "ClassName";
@@ -429,20 +436,20 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
             class ClassName
             {
             public:
-                class Nested1 {};
-            }
+                class Nested1;
+            };
 
             class ClassName::Nested1
             {
             public:
-                class Nested2 {};
-            }
+                class Nested2;
+            };
 
             class ClassName::Nested1::Nested2
             {
-            }
+            };
             )";
-    QTest::newRow("Twice Nested Class") << class11 << expected11;
+    QTest::newRow("11. Twice Nested Class") << class11 << expected11;
 
     ClassDef class12;
     class12.name = "ClassName";
@@ -454,7 +461,7 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
             {
             };
             )";
-    QTest::newRow("Inheritance From Class") << class12 << expected12;
+    QTest::newRow("12. Inheritance From Class") << class12 << expected12;
 
     ClassDef class13;
     class13.name = "ClassName";
@@ -466,7 +473,7 @@ void CppCodeGeneratorTest::testCppGenerateClass_data()
             {
             };
             )";
-    QTest::newRow("Inheritance From Several Interfaces") << class13 << expected13;
+    QTest::newRow("13. Inheritance From Several Interfaces") << class13 << expected13;
 }
 
 void CppCodeGeneratorTest::testCppGenerateMethod()
@@ -479,12 +486,12 @@ void CppCodeGeneratorTest::testCppGenerateMethod()
     string generatedCode;
     generator.generate(method, generatedCode);
 
-    if (QString::fromStdString(generatedCode) != expectedOutput)
+    if (util::normalize(generatedCode) != util::normalize(expectedOutput.toStdString()))
     {
         QString message = QString("\n=== Generated code: === \n%1\n=== Expected code: === \n%2")
                             .arg(QString::fromStdString(generatedCode))
                             .arg(expectedOutput);
-        cout << message.toStdString() << endl;
+        QWARN(message.toStdString().c_str());
         QVERIFY2(false, "");
     }
 }
@@ -564,7 +571,7 @@ void CppCodeGeneratorTest::testCppGenerateField()
                             .arg(QString::fromStdString(generatedCode))
                             .arg(expectedOutput);
         QWARN(message.toStdString().c_str());
-        QVERIFY2(false, "");
+        QVERIFY(false);
     }
 }
 
@@ -574,7 +581,7 @@ void CppCodeGeneratorTest::testCppGenerateField_data()
     QTest::addColumn<QString>("expectedOutput");
 
     VarDef field1;
-    field1.name = "fieldNamee";
+    field1.name = "fieldName";
     field1.type = "int";
     QTest::newRow("__BASE__ No Modifiers") << field1 << "int fieldName;";
 
