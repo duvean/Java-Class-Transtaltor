@@ -5,10 +5,7 @@
 class CodeGenerator
 {
 public:
-     virtual void generate(const JavaSourceDef &fileDef, string &dest) = 0;
-     virtual void generate(const ClassDef &classDef, string &dest) = 0;
-     virtual void generate(const MethodDef &method, string &dest) = 0;
-     virtual void generate(const VarDef &field, string &dest) = 0;
+     void generate(const vector<string> &tokens, string &dest);
 };
 
 #endif // CODEGENERATOR_H

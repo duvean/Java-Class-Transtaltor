@@ -16,12 +16,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         codegenerator.cpp \
-        cppcodegenerator.cpp \
         cppcodegeneratortest.cpp \
+        cpplexer.cpp \
+        lexer.cpp \
         main.cpp \
-        pythoncodegenerator.cpp \
         pythoncodegeneratortest.cpp \
-        util.cpp
+        pythonlexer.cpp \
+        util.cpp \
+        validatefiletest.cpp
 
 QT += testlib
 
@@ -32,9 +34,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     codegenerator.h \
-    cppcodegenerator.h \
     cppcodegeneratortest.h \
+    cpplexer.h \
     javasourcedef.h \
-    pythoncodegenerator.h \
+    lexer.h \
     pythoncodegeneratortest.h \
-    util.h
+    pythonlexer.h \
+    util.h \
+    validatefiletest.h

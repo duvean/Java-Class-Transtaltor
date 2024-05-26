@@ -1,6 +1,7 @@
 #ifndef CPPCODEGENERATORTEST_H
 #define CPPCODEGENERATORTEST_H
 #include "cppcodegenerator.h"
+#include "cpplexer.h"
 #include <QObject>
 #include "util.h"
 
@@ -12,7 +13,7 @@ public:
     explicit CppCodeGeneratorTest(QObject *parent = nullptr);
 
 private slots:
-//    void testCppGenerateFile();
+    void testCppGenerateFile();
     void testCppGenerateClass();
     void testCppGenerateMethod();
     void testCppGenerateField();

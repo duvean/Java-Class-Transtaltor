@@ -1,6 +1,7 @@
 #ifndef PYTHONCODEGENERATORTEST_H
 #define PYTHONCODEGENERATORTEST_H
-#include "pythoncodegenerator.h"
+#include "codegenerator.h"
+#include "pythonlexer.h"
 #include <QObject>
 #include "util.h"
 
@@ -13,14 +14,14 @@ public:
 
 private slots:
 //    void testPythonGenerateFile();
-//    void testPythonGenerateClass();
-//    void testPythonGenerateMethod();
-//    void testPythonGenerateField();
+    void testPythonGenerateClass();
+    void testPythonGenerateMethod();
+    void testPythonGenerateField();
 
 //    void testPythonGenerateFile_data();
-//    void testPythonGenerateClass_data();
-//    void testPythonGenerateMethod_data();
-//    void testPythonGenerateField_data();
+    void testPythonGenerateClass_data();
+    void testPythonGenerateMethod_data();
+    void testPythonGenerateField_data();
 };
 
 #endif // PYTHONCODEGENERATORTEST_H
