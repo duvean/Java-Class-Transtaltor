@@ -18,6 +18,7 @@ SOURCES += \
         codegenerator.cpp \
         cppcodegeneratortest.cpp \
         cpplexer.cpp \
+        error.cpp \
         lexer.cpp \
         main.cpp \
         pythoncodegeneratortest.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     codegenerator.h \
     cppcodegeneratortest.h \
     cpplexer.h \
+    error.h \
     javasourcedef.h \
     lexer.h \
     pythoncodegeneratortest.h \
