@@ -71,3 +71,7 @@ Thumbs.db
 *.dll
 *.exe
 
+pugiconfig.hpp
+pugixml.cpp
+pugixml.hpp
+mainpage.dox
