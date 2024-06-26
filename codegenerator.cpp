@@ -23,7 +23,7 @@ void CodeGenerator::generate(const vector<string> &tokens, string &dest)
         {
             if (dest.empty() || dest.back() == '\n')
                 for (int i = 0; i < indentationLevel; ++i)
-                    dest += '\t';
+                    dest += TAB;
 
             else if (!lastWasSpecial &&
                      token != ";" &&
@@ -35,6 +35,8 @@ void CodeGenerator::generate(const vector<string> &tokens, string &dest)
                      token != "}" &&
                      token != "[" &&
                      token != "]" &&
+                     token != "@" &&
+                     token != "\"" &&
                      token != ":")
                 dest += ' ';
 
@@ -50,6 +52,8 @@ void CodeGenerator::generate(const vector<string> &tokens, string &dest)
                               token == "}" ||
                               token == "[" ||
                               token == "]" ||
+                              token == "@" ||
+                              token == "\"" ||
                               token == ":");
         }
     }
